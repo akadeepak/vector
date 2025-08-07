@@ -1,0 +1,114 @@
+Here are the step-by-step instructions to set up a full local production-like pipeline for:
+
+📄 PDF → Text → Embedding → Qdrant Vector DB
+
+Using:
+
+Ollama (nomic-embed-text)
+
+Qdrant (via Docker)
+
+Node.js script to handle PDF parsing, embedding, and storing
+
+✅ 1. Install Requirements
+🧠 Ollama (for Embedding)
+bash
+Copy
+Edit
+curl -fsSL https://ollama.com/install.sh | sh
+ollama run nomic-embed-text
+This downloads the nomic-embed-text model and starts the local API at http://localhost:11434.
+
+📦 Qdrant (Vector DB)
+Option A: Docker (Recommended)
+bash
+Copy
+Edit
+docker run -d \
+  -p 6333:6333 \
+  -p 6334:6334 \
+  --name qdrant \
+  qdrant/qdrant
+Qdrant will now be running at:
+
+REST API → http://localhost:6333
+
+Web UI → http://localhost:6333/dashboard (optional with Qdrant Cloud)
+
+✅ 2. Project Setup
+bash
+Copy
+Edit
+mkdir llm-pipeline && cd llm-pipeline
+npm init -y
+npm install pdf-parse axios gpt-3-encoder uuid
+Optional: Add .env and config separation later for production.
+
+✅ 3. Create Script embed-and-store.js
+Paste the enhanced full version of the script you already have with:
+
+PDF reading
+
+Text cleaning
+
+Chunking
+
+Ollama embedding
+
+Storing in Qdrant
+
+⏱️ Performance logging
+
+Here it is again shortened for clarity: [full version in previous reply]
+
+js
+Copy
+Edit
+// ...
+console.time('⏱️ Total Processing Time');
+// Read + parse + clean PDF
+// Split into chunks
+// For each chunk: send to Ollama → send to Qdrant
+console.timeEnd('⏱️ Total Processing Time');
+✅ 4. Run It
+bash
+Copy
+Edit
+node embed-and-store.js
+Example output:
+
+less
+Copy
+Edit
+📦 Embedding chunk 1/5
+✅ Stored chunk 1 | Time: 3.9s
+...
+⏱️ Total Processing Time: 24.5s
+✅ 5. Check Qdrant UI or Data
+With Docker (REST API)
+bash
+Copy
+Edit
+curl http://localhost:6333/collections/pdf_chunks/points/count
+Visual Web UI (Optional)
+You can also use:
+
+Qdrant Cloud UI
+
+Or build your own admin panel using Qdrant REST API:
+
+/collections
+
+/points
+
+/search
+
+✅ 6. Production Notes
+Concern	Recommendation
+Docker Management	Use Docker Compose, healthchecks, volume mounts for persistence
+Performance	Use batching, caching, and async chunk processing
+Model Serving	Run Ollama with GPU if available, or move to dedicated LLM service
+Logging & Errors	Use Winston or Pino logging, and robust error retries
+Monitoring	Prometheus/Grafana or basic health-check endpoints
+
+Would you like a docker-compose.yml that launches Ollama and Qdrant together?
